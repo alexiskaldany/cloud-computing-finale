@@ -1,7 +1,13 @@
 ## File for Dagster Operations
 from dagster import op, job, get_dagster_logger
 import pandas as pd
+import numpy as np
 from time import sleep
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn import metrics
+from sklearn.metrics import r2_score
+
 logger = get_dagster_logger()
     
 # Variables
@@ -91,24 +97,24 @@ def pre_process_data(df):
     
 
     logger.info(f"Organizing raw dataframe into correct shape and dtypes")
-    return df
+    return df_final
 
 @op
-def model_creation(df):
+def model_creation(df_final):
     sleep(2)
     """ 
     put Suhas code here
     """
     for i in range(0,2):
      if(i==0) : 
-        X_home = df[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
-        y_home = df['teamPTS']
+        X_home = df_final[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
+        y_home = df_final['teamPTS']
         from sklearn.model_selection import train_test_split
         X_train_home, X_test_home, y_train_home, y_test_home = train_test_split(X_home, y_home, test_size=0.2, random_state=0)
         
      elif(i==1):
-        X_away = df[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
-        y_away = df['opptPTS']
+        X_away = df_final[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
+        y_away = df_final['opptPTS']
         from sklearn.model_selection import train_test_split
         X_train_away, X_test_away, y_train_away, y_test_away = train_test_split(X_away, y_away, test_size=0.2, random_state=0)
     logger.info(f"Train-Test sets created, data has been regularized,ect..")
@@ -223,8 +229,8 @@ def post_processing(coefficients_team, coefficients_away, intercept_team, interc
 def NBA_Pipeline():
     df = scrape_data()
     df = df_to_s3(df)
-    df = pre_process_data(df)
-    X_train_home, X_test_home, y_train_home, y_test_home, X_train_away, X_test_away, y_train_away, y_test_away = model_creation(df)
+    df_final = pre_process_data(df)
+    X_train_home, X_test_home, y_train_home, y_test_home, X_train_away, X_test_away, y_train_away, y_test_away = model_creation(df_final)
     regressor_home, regressor_away = model_training(X_train_home, y_train_home, X_train_away, y_train_away)
     coefficients_team, coefficients_away, intercept_team, intercept_away = model_evaluation(regressor_home, regressor_away , X_test_home, X_test_away, y_test_home, y_test_away)
     test_df = post_processing(coefficients_team, coefficients_away, intercept_team, intercept_away)
