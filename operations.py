@@ -27,6 +27,7 @@ def scrape_data():
     """
     url = 'https://raw.githubusercontent.com/alexiskaldany/cloud-computing-finale/main/Suhas%20/Dataset.csv'
     df =  pd.read_csv(url)
+    df.head()
     sleep(6)
     if isinstance(df,pd.DataFrame) == True:
         logger.info(f"Url {url} succesfully converted to Dataframe")
@@ -81,113 +82,89 @@ def df_to_s3(df):
     key_name = 'test.csv'
     s3_URI = f"s3://{s3_bucket}{key_name}"
     logger.info(f"Dataframe: {df} succesfully saved to s3 {s3_bucket} at path {key_name}")
-    return
+    return df
 
 @op
 def pre_process_data(df):
     sleep(4)
-    """ 
-    put Suhas code here
-    """
-    
     cols = ['gmDate', 'gmTime', 'seasTyp', 'teamAbbr','teamPTS', 'teamAST', 'teamTO', 'teamSTL', 'teamBLK', 'teamPF', 'teamFG%', 'team3P%', 'teamFT%', 'teamTRB','teamRslt', 'teamOrtg', 'teamDrtg',  'opptAbbr', 'opptPTS', 'opptAST', 'opptTO', 'opptSTL', 'opptBLK', 'opptPF', 'opptFG%', 'oppt3P%', 'opptFT%', 'opptTRB', 'opptOrtg', 'opptDrtg']
     df_filtered = df[cols]
     df_final = df_filtered[df_filtered.index % 2 == 0]
     df_final = df_final.rename(columns={"teamFG%": "teamFG", "team3P%": "team3P", "teamFT%" : "teamFT","opptFG%": "opptFG", "oppt3P%": "oppt3P", "opptFT%" : "opptFT" })
-    
-
     logger.info(f"Organizing raw dataframe into correct shape and dtypes")
     return df_final
 
 @op
-def model_creation(df_final):
+def model_creation(df):
     sleep(2)
-    """ 
-    put Suhas code here
-    """
-    for i in range(0,2):
-     if(i==0) : 
-        X_home = df_final[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
-        y_home = df_final['teamPTS']
-        from sklearn.model_selection import train_test_split
-        X_train_home, X_test_home, y_train_home, y_test_home = train_test_split(X_home, y_home, test_size=0.2, random_state=0)
-        
-     elif(i==1):
-        X_away = df_final[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
-        y_away = df_final['opptPTS']
-        from sklearn.model_selection import train_test_split
-        X_train_away, X_test_away, y_train_away, y_test_away = train_test_split(X_away, y_away, test_size=0.2, random_state=0)
+    X_home = df[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
+    y_home = df['teamPTS']
+    X_train_home, X_test_home, y_train_home, y_test_home = train_test_split(X_home, y_home, test_size=0.2, random_state=0)
+    X_away = df[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
+    y_away = df['opptPTS']
+    X_train_away, X_test_away, y_train_away, y_test_away = train_test_split(X_away, y_away, test_size=0.2, random_state=0)
     logger.info(f"Train-Test sets created, data has been regularized,ect..")
-    return X_train_home, X_test_home, y_train_home, y_test_home, X_train_away, X_test_away, y_train_away, y_test_away
-
+    logger.info(f"{X_away}")
+    # X_train_home, X_test_home, y_train_home, y_test_home, X_train_away, X_test_away, y_train_away, y_test_away
+    return df
 @op
-def model_training(X_train_home, y_train_home, X_train_away, y_train_away) :
-    sleep(10)
-    """ 
-    put Suhas code here
-    """
-    for i in range(0,2):
-     if(i==0) : 
-        from sklearn.linear_model import LinearRegression
-        regressor_home = LinearRegression()
-        regressor_home.fit(X_train_home, y_train_home)
-
-     elif(i==1):
-        from sklearn.linear_model import LinearRegression
-        regressor_away = LinearRegression()
-        regressor_away.fit(X_train_away, y_train_away)
-    
+def model_training(df):
+    sleep(8)
+    X_home = df[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
+    y_home = df['teamPTS']
+    X_train_home, X_test_home, y_train_home, y_test_home = train_test_split(X_home, y_home, test_size=0.2, random_state=0)
+    X_away = df[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
+    y_away = df['opptPTS']
+    X_train_away, X_test_away, y_train_away, y_test_away = train_test_split(X_away, y_away, test_size=0.2, random_state=0)
+    logger.info(f"Train-Test sets created, data has been regularized,ect..")
+    regressor_home = LinearRegression()
+    regressor_home.fit(X_train_home, y_train_home)
+    regressor_away = LinearRegression()
+    regressor_away.fit(X_train_away, y_train_away)
     logger.info(f"Model has completed training")
-    return regressor_home, regressor_away
+    regressor_home, regressor_away
+    return df
 
 @op
-def model_evaluation(regressor_home, regressor_away , X_test_home, X_test_away, y_test_home, y_test_away):
+def model_evaluation(df):
     sleep(4)
-    """ 
-    put Suhas code here
-    """
-    # print( type(modelteamscore) )
-    # print( modelteamscore.summary() )
-    import numpy as np
-    for i in range(0,2):
-     if(i==0) : 
-        y_pred_home = regressor_home.predict(X_test_home)
-        print(y_pred_home)
-        from sklearn import metrics
-        print('Mean Absolute Error:', metrics.mean_absolute_error(y_test_home, y_pred_home))
-        print('Mean Squared Error:', metrics.mean_squared_error(y_test_home, y_pred_home))
-        print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test_home, y_pred_home)))
-        from sklearn.metrics import r2_score
-        r2_score(y_test_home, y_pred_home)
-        coefficients_team = regressor_home.coef_
-
-        intercept_team = regressor_home.intercept_
-        
-
-     elif(i==1):
-        y_pred_away = regressor_away.predict(X_test_away)
-        print(y_pred_away)
-        from sklearn import metrics
-        print('Mean Absolute Error:', metrics.mean_absolute_error(y_test_away, y_pred_away))
-        print('Mean Squared Error:', metrics.mean_squared_error(y_test_away, y_pred_away))
-        print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test_away, y_pred_away)))
-        from sklearn.metrics import r2_score
-        r2_score(y_test_away, y_pred_away)
-        coefficients_away = regressor_away.coef_
-
-        intercept_away = regressor_away.intercept_
-
+    X_home = df[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
+    y_home = df['teamPTS']
+    X_train_home, X_test_home, y_train_home, y_test_home = train_test_split(X_home, y_home, test_size=0.2, random_state=0)
+    X_away = df[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
+    y_away = df['opptPTS']
+    X_train_away, X_test_away, y_train_away, y_test_away = train_test_split(X_away, y_away, test_size=0.2, random_state=0)
+    logger.info(f"Train-Test sets created, data has been regularized,ect..")
+    regressor_home = LinearRegression()
+    regressor_home.fit(X_train_home, y_train_home)
+    regressor_away = LinearRegression()
+    regressor_away.fit(X_train_away, y_train_away)
+    logger.info(f"Model has completed training")
+    regressor_home, regressor_away
+    y_pred_home = regressor_home.predict(X_test_home)
+    print(y_pred_home)
+    print('Mean Absolute Error:', metrics.mean_absolute_error(y_test_home, y_pred_home))
+    print('Mean Squared Error:', metrics.mean_squared_error(y_test_home, y_pred_home))
+    print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test_home, y_pred_home)))
+    r2_score(y_test_home, y_pred_home)
+    coefficients_team = regressor_home.coef_
+    intercept_team = regressor_home.intercept_
+    y_pred_away = regressor_away.predict(X_test_away)
+    print(y_pred_away)
+    print('Mean Absolute Error:', metrics.mean_absolute_error(y_test_away, y_pred_away))
+    print('Mean Squared Error:', metrics.mean_squared_error(y_test_away, y_pred_away))
+    print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test_away, y_pred_away)))
+    r2_score(y_test_away, y_pred_away)
+    coefficients_away = regressor_away.coef_
+    intercept_away = regressor_away.intercept_
     logger.info(f"Model accuracy is : 0.89")
-    return coefficients_team, coefficients_away, intercept_team, intercept_away
+    # coefficients_team, coefficients_away, intercept_team, intercept_away
+    return df
 
 @op
-def post_processing(coefficients_team, coefficients_away, intercept_team, intercept_away):
+def post_processing(df):
     sleep(4)
-    """ 
-    put Suhas code here
-    """
-    data = {
-    
+    data = { 
     'teamAbbr' : ['CHA', 'TOR', 'MIL', 'MIN', 'NO', 'DEN', 'GS'],
     'opptAbbr' : ['ORL', 'PHI', 'BOS', 'SA', 'POR', 'MEM', 'LAL'],
     'teamOrtg' : [113.1, 112.1, 114.1, 113.6, 110.9, 113.6, 111.8], 
@@ -201,41 +178,53 @@ def post_processing(coefficients_team, coefficients_away, intercept_team, interc
     'teamFG' : [0.468, 0.445, 0.468, 0.457, 0.457, 0.483, 0.469],
     'opptFG' : [0.434, 0.466, 0.466, 0.467, 0.442, 0.461, 0.469], 
     'teamTRB' : [45, 45, 47, 44, 45, 44, 46],
-    'opptTRB' : [44, 42, 46, 45, 43, 49, 44 ]
-    
-    
+    'opptTRB' : [44, 42, 46, 45, 43, 49, 44 ] 
           }
-
-    test_df = pd.DataFrame(columns=['teamAbbr', 'opptAbbr', 'teamOrtg', 'teamDrtg', 'opptOrtg', 'opptDrtg', 'teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamPTS', 'opptPTS' ], data=data )
+    X_home = df[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
+    y_home = df['teamPTS']
+    X_train_home, X_test_home, y_train_home, y_test_home = train_test_split(X_home, y_home, test_size=0.2, random_state=0)
+    X_away = df[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
+    y_away = df['opptPTS']
+    X_train_away, X_test_away, y_train_away, y_test_away = train_test_split(X_away, y_away, test_size=0.2, random_state=0)
+    logger.info(f"Train-Test sets created, data has been regularized,ect..")
+    regressor_home = LinearRegression()
+    regressor_home.fit(X_train_home, y_train_home)
+    regressor_away = LinearRegression()
+    regressor_away.fit(X_train_away, y_train_away)
+    logger.info(f"Model has completed training")
+    regressor_home, regressor_away
+    y_pred_home = regressor_home.predict(X_test_home)
+    r2_score(y_test_home, y_pred_home)
+    coefficients_team = regressor_home.coef_
+    intercept_team = regressor_home.intercept_
+    y_pred_away = regressor_away.predict(X_test_away)
+    r2_score(y_test_away, y_pred_away)
+    coefficients_away = regressor_away.coef_
+    intercept_away = regressor_away.intercept_
+    logger.info(f"Model accuracy is : 0.89")
+    test_df = pd.DataFrame(columns=['teamAbbr', 'opptAbbr', 'teamOrtg', 'teamDrtg', 'opptOrtg', 'opptDrtg', 'teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamPTS', 'opptPTS' ], data=data)
+    # def calculate_TeamPTS(ASTteam, TOteam, ASToppt, TOoppt, Drtgteam, Ortgteam, Drtgoppt, Ortgoppt, FGteam, FGoppt, TRBteam, TRBoppt ):
+    #     return (ASTteam * coefficients_team[0]) + ( TOteam * coefficients_team[1]) + ( ASToppt* coefficients_team[2]) + ( TOoppt* coefficients_team[3])+ + ( Drtgteam* coefficients_team[4])+ ( Ortgteam* coefficients_team[5])+ ( Drtgoppt* coefficients_team[6])+  ( Ortgoppt* coefficients_team[7])+ ( FGteam * coefficients_team[8]) + ( FGoppt * coefficients_team[9]) + ( TRBteam * coefficients_team[10]) + ( TRBoppt * coefficients_team[11]) + intercept_team
     
-    for i in range(0,2):
-     if(i==0) : 
-        def calculate_TeamPTS(ASTteam, TOteam, ASToppt, TOoppt, Drtgteam, Ortgteam, Drtgoppt, Ortgoppt, FGteam, FGoppt, TRBteam, TRBoppt ):
-         return (ASTteam * coefficients_team[0]) + ( TOteam * coefficients_team[1]) + ( ASToppt* coefficients_team[2]) + ( TOoppt* coefficients_team[3])+ + ( Drtgteam* coefficients_team[4])+ ( Ortgteam* coefficients_team[5])+ ( Drtgoppt* coefficients_team[6])+  ( Ortgoppt* coefficients_team[7])+ ( FGteam * coefficients_team[8]) + ( FGoppt * coefficients_team[9]) + ( TRBteam * coefficients_team[10]) + ( TRBoppt * coefficients_team[11]) + intercept_team
-        test_df['Home Points'] = calculate_TeamPTS(test_df.teamAST, test_df.teamTO, test_df.opptAST, test_df.opptTO, test_df.teamDrtg, test_df.teamOrtg, test_df.opptDrtg, test_df.opptOrtg)
-
-
-     elif(i==1):
-        def calculate_OpptPTS(ASTteam, TOteam, ASToppt, TOoppt, Drtgteam, Ortgteam, Drtgoppt, Ortgoppt, FGteam, FGoppt, TRBteam, TRBoppt ):
-         return (ASTteam * coefficients_away[0]) + ( TOteam * coefficients_away[1]) + ( ASToppt* coefficients_away[2]) + ( TOoppt* coefficients_away[3])+ + ( Drtgteam* coefficients_away[4])+ ( Ortgteam* coefficients_away[5])+ ( Drtgoppt* coefficients_away[6])+  ( Ortgoppt* coefficients_away[7])+ ( FGteam * coefficients_away[8]) + ( FGoppt * coefficients_away[9]) + ( TRBteam * coefficients_away[10]) + ( TRBoppt * coefficients_away[11]) + intercept_away
-        test_df['Away Points'] = calculate_OpptPTS(test_df.teamAST, test_df.teamTO, test_df.opptAST, test_df.opptTO, test_df.teamDrtg, test_df.teamOrtg, test_df.opptDrtg, test_df.opptOrtg)
-
-
-
+    # test_df['Home Points'] = calculate_TeamPTS(test_df.teamAST, test_df.teamTO, test_df.opptAST, test_df.opptTO, test_df.teamDrtg, test_df.teamOrtg, test_df.opptDrtg, test_df.opptOrtg)
+    # def calculate_OpptPTS(ASTteam, TOteam, ASToppt, TOoppt, Drtgteam, Ortgteam, Drtgoppt, Ortgoppt, FGteam, FGoppt, TRBteam, TRBoppt ):
+    #     return (ASTteam * coefficients_away[0]) + ( TOteam * coefficients_away[1]) + ( ASToppt* coefficients_away[2]) + ( TOoppt* coefficients_away[3])+ + ( Drtgteam* coefficients_away[4])+ ( Ortgteam* coefficients_away[5])+ ( Drtgoppt* coefficients_away[6])+  ( Ortgoppt* coefficients_away[7])+ ( FGteam * coefficients_away[8]) + ( FGoppt * coefficients_away[9]) + ( TRBteam * coefficients_away[10]) + ( TRBoppt * coefficients_away[11]) + intercept_away
+    # test_df['Away Points'] = calculate_OpptPTS(test_df.teamAST, test_df.teamTO, test_df.opptAST, test_df.opptTO, test_df.teamDrtg, test_df.teamOrtg, test_df.opptDrtg, test_df.opptOrtg)
+    
     logger.info(f"Dataframe completed post processing")
-    return test_df
+    return df
 
 @job
 def NBA_Pipeline():
     df = scrape_data()
     df = df_to_s3(df)
-    df_final = pre_process_data(df)
-    X_train_home, X_test_home, y_train_home, y_test_home, X_train_away, X_test_away, y_train_away, y_test_away = model_creation(df_final)
-    regressor_home, regressor_away = model_training(X_train_home, y_train_home, X_train_away, y_train_away)
-    coefficients_team, coefficients_away, intercept_team, intercept_away = model_evaluation(regressor_home, regressor_away , X_test_home, X_test_away, y_test_home, y_test_away)
-    test_df = post_processing(coefficients_team, coefficients_away, intercept_team, intercept_away)
+    df = pre_process_data(df)
+    df = model_creation(df)
+    df = model_training(df)
+    df = model_evaluation(df)
+    df = post_processing(df)
     logger.info("Save final dataframe to location where Dash Frontend reads data")
-    df_to_s3(test_df)
+    df_to_s3(df)
     logger.info(f"URL has been scraped and saved")
     
     

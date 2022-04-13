@@ -51,8 +51,8 @@ COPY repo.py $DAGSTER_HOME
 - `chmod 600 /Users/alexiskaldany/school/cloud-dash.pem`
 -
 - ```
-   ssh -i "/Users/alexiskaldany/school/cloud-dash.pem" ubuntu@54.210.0.102
-   ssh -i "/Users/alexiskaldany/school/cloud-dash.pem" ubuntu@34.226.124.7
+   ssh -i "/Users/alexiskaldany/school/cloud-dash.pem" ubuntu@44.200.50.123 # dash
+   ssh -i "/Users/alexiskaldany/school/cloud-dash.pem" ubuntu@52.23.176.8 # daggit
    cd cloud-computing-finale
    source venv/bin/activate
    python3 Cloud_dash.py
@@ -75,7 +75,7 @@ COPY repo.py $DAGSTER_HOME
 
 link will be the IP of the EC2 with :8050
 
-- `http://54.208.41.106:8050`
+- `http://44.200.50.123:8050`
 
 - `pip install wget`
 - `wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install`
