@@ -110,6 +110,8 @@ def model_evaluation(df):
     """ 
     put Suhas code here
     """
+    # print( type(modelteamscore) )
+    # print( modelteamscore.summary() )
     logger.info(f"Model accuracy is : 0.89")
     return df
 

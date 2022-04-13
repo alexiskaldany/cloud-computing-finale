@@ -1,5 +1,5 @@
 import dash
-import dash_table
+from dash import dash_table
 import numpy as np
 import pandas as pd
 import dash as dash
@@ -8,7 +8,7 @@ from dash import dcc
 from dash.dependencies import Input,Output
 import plotly.express as px
 from scipy.fft import fft
-from dash.exceptions import PreventUpdate
+#from dash.exceptions import PreventUpdate
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -48,9 +48,9 @@ my_app.layout = html.Div([html.H1('NBA matchup win predictor', style={'textAlign
                           html.Div(id='layout')])
 
 matchup1_layout = html.Div([
-    html.H1('Charolette hornets vs Orlando Magic', style={'textAlign': 'center'}),
+    html.H1('Charlette hornets vs Orlando Magic', style={'textAlign': 'center'}),
     dash_table.DataTable(df_1.to_dict('records'), [{"name": i, "id": i} for i in df_1.columns], style_data={ 'border': '#324f6e' }),
-    html.H3('We predict the Charolette hornets to win tonight', style={'textAlign': 'center'})
+    html.H3('We predict the Charlette hornets to win tonight', style={'textAlign': 'center'})
 
     ])
 
@@ -116,5 +116,5 @@ def update_layout(ques):
 
 
 if __name__ == '__main__':
-    application.run(host='0.0.0.0', port=8050)
+    application.run(debug=True,host='0.0.0.0', port=8050)
 

@@ -54,4 +54,4 @@ html.H1(
 # You will need to put this line at the bottom of your code to run #the application.
 
 if __name__ == '__main__':
-    application.run(host='0.0.0.0', port=8050)
+    application.run(debug=True,host='0.0.0.0', port=8050)
