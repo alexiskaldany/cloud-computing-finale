@@ -18,46 +18,46 @@ df1 = dfnew[dfnew.index % 2 == 0]  # Excludes every other row
 df1 = df1.rename(columns={"teamFG%": "teamFG", "team3P%": "team3P", "teamFT%" : "teamFT","opptFG%": "opptFG", "oppt3P%": "oppt3P", "opptFT%" : "opptFT" })
 #%%
 #%%
-X = df1[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
-y = df1['opptPTS']
+X_away = df1[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
+y_away = df1['opptPTS']
 
 # %%
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+X_train_away, X_test_away, y_train_away, y_test_away = train_test_split(X_away, y_away, test_size=0.2, random_state=0)
 
 #%%
 from sklearn.linear_model import LinearRegression
-regressor = LinearRegression()
-regressor.fit(X_train, y_train)
+regressor_away = LinearRegression()
+regressor_away.fit(X_train_away, y_train_away)
 
 #%%
-y_pred = regressor.predict(X_test)
+y_pred_away = regressor_away.predict(X_test_away)
 
 #%%
-print(y_pred)
+print(y_pred_away)
 
 #%%
-resultPTS = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+resultPTS = pd.DataFrame({'Actual': y_test_away, 'Predicted': y_pred_away})
 resultPTS
 
 #%%
 from sklearn import metrics
-print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
-print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))
-print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+print('Mean Absolute Error:', metrics.mean_absolute_error(y_test_away, y_pred_away))
+print('Mean Squared Error:', metrics.mean_squared_error(y_test_away, y_pred_away))
+print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test_away, y_pred_away)))
 
 
 #%%
 from sklearn.metrics import r2_score
-r2_score(y_test, y_pred)
+r2_score(y_test_away, y_pred_away)
 
 #%%
-coefficients = regressor.coef_
+coefficients_away = regressor_away.coef_
 
-intercept = regressor.intercept_
+intercept_away = regressor_away.intercept_
 # %%
 def calculate_OpptPTS(ASTteam, TOteam, ASToppt, TOoppt, Drtgteam, Ortgteam, Drtgoppt, Ortgoppt, FGteam, FGoppt, TRBteam, TRBoppt ):
-  return (ASTteam * coefficients[0]) + ( TOteam * coefficients[1]) + ( ASToppt* coefficients[2]) + ( TOoppt* coefficients[3])+ + ( Drtgteam* coefficients[4])+ ( Ortgteam* coefficients[5])+ ( Drtgoppt* coefficients[6])+  ( Ortgoppt* coefficients[7])+ ( FGteam * coefficients[8]) + ( FGoppt * coefficients[9]) + ( TRBteam * coefficients[10]) + ( TRBoppt * coefficients[11]) + intercept
+  return (ASTteam * coefficients_away[0]) + ( TOteam * coefficients_away[1]) + ( ASToppt* coefficients_away[2]) + ( TOoppt* coefficients_away[3])+ + ( Drtgteam* coefficients_away[4])+ ( Ortgteam* coefficients_away[5])+ ( Drtgoppt* coefficients_away[6])+  ( Ortgoppt* coefficients_away[7])+ ( FGteam * coefficients_away[8]) + ( FGoppt * coefficients_away[9]) + ( TRBteam * coefficients_away[10]) + ( TRBoppt * coefficients_away[11]) + intercept_away
 
 
 

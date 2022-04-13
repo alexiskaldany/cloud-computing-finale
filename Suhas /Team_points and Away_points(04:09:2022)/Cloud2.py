@@ -19,53 +19,46 @@ df1 = df1.rename(columns={"teamFG%": "teamFG", "team3P%": "team3P", "teamFT%" : 
 
 
 #%%
-X = df1[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
-y = df1['teamPTS']
+X_home = df1[['teamAST', 'teamTO', 'opptAST', 'opptTO', 'teamDrtg', 'teamOrtg', 'opptDrtg', 'opptOrtg', 'teamFG', 'opptFG', 'teamTRB', 'opptTRB']]
+y_home = df1['teamPTS']
 # %%
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+X_train_home, X_test_home, y_train_home, y_test_home = train_test_split(X_home, y_home, test_size=0.2, random_state=0)
 
 #%%
 from sklearn.linear_model import LinearRegression
-regressor = LinearRegression()
-regressor.fit(X_train, y_train)
+regressor_home = LinearRegression()
+regressor_home.fit(X_train_home, y_train_home)
 
 #%%
-y_pred = regressor.predict(X_test)
+y_pred_home = regressor_home.predict(X_test_home)
 
 #%%
-print(y_pred)
+print(y_pred_home)
 
 #%%
-resultPTS = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+resultPTS = pd.DataFrame({'Actual Team Score': y_test_home, 'Predicted Team Score': y_pred_home})
 resultPTS
 
 #%%
 from sklearn import metrics
-print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
-print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))
-print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+print('Mean Absolute Error:', metrics.mean_absolute_error(y_test_home, y_pred_home))
+print('Mean Squared Error:', metrics.mean_squared_error(y_test_home, y_pred_home))
+print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test_home, y_pred_home)))
 
 
 #%%
 from sklearn.metrics import r2_score
-r2_score(y_test, y_pred)
+r2_score(y_test_home, y_pred_home)
 
 #%%
-coefficients = regressor.coef_
+coefficients_team = regressor_home.coef_
 
-intercept = regressor.intercept_
+intercept_team = regressor_home.intercept_
 # %%
 def calculate_TeamPTS(ASTteam, TOteam, ASToppt, TOoppt, Drtgteam, Ortgteam, Drtgoppt, Ortgoppt, FGteam, FGoppt, TRBteam, TRBoppt ):
-  return (ASTteam * coefficients[0]) + ( TOteam * coefficients[1]) + ( ASToppt* coefficients[2]) + ( TOoppt* coefficients[3])+ + ( Drtgteam* coefficients[4])+ ( Ortgteam* coefficients[5])+ ( Drtgoppt* coefficients[6])+  ( Ortgoppt* coefficients[7])+ ( FGteam * coefficients[8]) + ( FGoppt * coefficients[9]) + ( TRBteam * coefficients[10]) + ( TRBoppt * coefficients[11]) + intercept
+  return (ASTteam * coefficients_team[0]) + ( TOteam * coefficients_team[1]) + ( ASToppt* coefficients_team[2]) + ( TOoppt* coefficients_team[3])+ + ( Drtgteam* coefficients_team[4])+ ( Ortgteam* coefficients_team[5])+ ( Drtgoppt* coefficients_team[6])+  ( Ortgoppt* coefficients_team[7])+ ( FGteam * coefficients_team[8]) + ( FGoppt * coefficients_team[9]) + ( TRBteam * coefficients_team[10]) + ( TRBoppt * coefficients_team[11]) + intercept_team
 
 
 
 
-#%%
-#tst = pd.DataFrame('Enter test dataframe path')
-#%%
-
-
-result_df = calculate_teamPTS(tst.teamAST, tst.teamTO, tst.opptAST, tst.opptTO, tst.teamDrtg, tst.teamOrtg, tst.opptDrtg, tst.opptOrtg)
-# %%
