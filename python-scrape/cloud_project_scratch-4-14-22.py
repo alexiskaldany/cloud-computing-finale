@@ -19,7 +19,7 @@ print("\nIMPORT SUCCESS")
 
 #%%
 # LIVE MATCHUPS
-matchup_filepath = 'dash_matchups-4-7-22-vF'
+matchup_filepath = '../cloud-computing-finale/data/dash_matchups-4-7-22-vF'
 matchup_df = pd.read_excel(matchup_filepath + '.xlsx', index_col='TEAM_CODE')
 #matchup_df = pd.read_csv(matchup_filepath + '.csv', index_col='TEAM_CODE')
 
@@ -126,3 +126,60 @@ if __name__ == '__main__':
 
 
 #%%
+#matchup_app.run_server(
+#    port = 8040,
+#    host = '0.0.0.0',
+#    debug=True
+#)
+
+#%%
+
+#%%
+current_time = datetime.datetime.now()
+#display_time = datetime.datetime.now()
+print(f'{current_time:%Y-%m-%d %H:%M}')
+
+#%%
+#style_data_conditional = [{'if': {'row_index': 'odd'},
+ #                          'backgroundColor': 'rgb(220, 220, 220)',
+ #                          }],
+
+#df['Rating'] = df['Humidity'].apply(lambda x:
+#    '⭐⭐⭐' if x > 30 else (
+#    '⭐⭐' if x > 20 else (
+#    '⭐' if x > 10 else ''
+#)))
+#df['Growth'] = df['Temperature'].apply(lambda x: '↗️' if x > 0 else '↘️')
+#df['Status'] = df['Temperature'].apply(lambda x: '🔥' if x > 0 else '🚒')
+
+
+
+
+#%%
+# html.P('METRIC COMPARISON'),
+dcc.Graph(id='matchup-chart'),
+html.Br(),
+html.P('STAT A'),
+dcc.Dropdown(id='stata',
+             options=[{'label': 'effective-field-goal-pct', 'value': 'effective-field-goal-pct'},
+                      {'label': 'true-shooting-percentage', 'value': 'true-shooting-percentage'},
+                      {'label': 'offensive-efficiency', 'value': 'offensive-efficiency'},
+                      {'label': 'defensive-efficiency', 'value': 'defensive-efficiency'},
+                      {'label': 'net-adj-efficiency', 'value': 'net-adj-efficiency'},
+                      # {'label': 'three-pointers-made-per-game', 'value': 'three-pointers-made-per-game'},
+                      # {'label': 'three-pointers-attempted-per-game', 'value': 'three-pointers-attempted-per-game'},
+                      {'label': 'assist--per--turnover-ratio', 'value': 'assist--per--turnover-ratio'}],
+             value='defensive-efficiency'),
+html.Br(),
+html.P('STAT B'),
+dcc.Dropdown(id='statb',
+             options=[{'label': 'effective-field-goal-pct', 'value': 'effective-field-goal-pct'},
+                      {'label': 'true-shooting-percentage', 'value': 'true-shooting-percentage'},
+                      {'label': 'offensive-efficiency', 'value': 'offensive-efficiency'},
+                      {'label': 'defensive-efficiency', 'value': 'defensive-efficiency'},
+                      {'label': 'net-adj-efficiency', 'value': 'net-adj-efficiency'},
+                      # {'label': 'three-pointers-made-per-game', 'value': 'three-pointers-made-per-game'},
+                      # {'label': 'three-pointers-attempted-per-game', 'value': 'three-pointers-attempted-per-game'},
+                      {'label': 'assist--per--turnover-ratio', 'value': 'assist--per--turnover-ratio'}],
+             value='defensive-efficiency'),
+html.Br(),
