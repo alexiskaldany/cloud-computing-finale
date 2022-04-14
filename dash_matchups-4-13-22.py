@@ -19,7 +19,7 @@ print("\nIMPORT SUCCESS")
 
 #%%
 # LIVE MATCHUPS
-matchup_filepath = '../cloud-computing-finale/data/dash_matchups-4-7-22-vF'
+matchup_filepath = 'dash_matchups-4-7-22-vF'
 matchup_df = pd.read_excel(matchup_filepath + '.xlsx', index_col='TEAM_CODE')
 #matchup_df = pd.read_csv(matchup_filepath + '.csv', index_col='TEAM_CODE')
 
